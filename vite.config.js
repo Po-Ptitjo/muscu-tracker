@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
-  base: '/running-app/',
+  base: '/muscu-tracker/',
   plugins: [
     react(),
     VitePWA({
@@ -13,13 +13,13 @@ export default defineConfig({
         name: 'RunPace — Programme 10K',
         short_name: 'RunPace',
         description: 'Suivi de programme running 10 km par cycles progressifs',
-        id: '/running-app/',
+        id: '/muscu-tracker/',
         theme_color: '#07090F',
         background_color: '#07090F',
         display: 'standalone',
         orientation: 'portrait',
-        start_url: '/running-app/',
-        scope: '/running-app/',
+        start_url: '/muscu-tracker/',
+        scope: '/muscu-tracker/',
         icons: [
           { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png' },
           { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png' },
