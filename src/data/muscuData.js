@@ -42,7 +42,7 @@ export const BASE_PROGRAM = [
       { id: 'j1e1', name: 'Développé couché machine', group: 'Pectoraux', sets: 4, rMin: 8, rMax: 12, weight: 25, inc: 5, equipType: 'machine', notes: 'Contrôle en descente, pause en haut' },
       { id: 'j1e2', name: 'Développé incliné haltères', group: 'Pectoraux', sets: 4, rMin: 8, rMax: 12, weight: 20, inc: 2, equipType: 'free', notes: 'Coudes à 45°' },
       { id: 'j1e3', name: 'Écarté poulie basse', group: 'Pectoraux', sets: 3, rMin: 12, rMax: 15, weight: 15, inc: 5, equipType: 'machine', notes: 'Contraction maximale' },
-      { id: 'j1e4', name: 'Développé épaules machine', group: 'Épaules', sets: 4, rMin: 8, rMax: 12, weight: 16, inc: 5, equipType: 'machine', notes: '' },
+      { id: 'j1e4', name: 'Développé épaules haltères', group: 'Épaules', sets: 4, rMin: 8, rMax: 12, weight: 16, inc: 2, equipType: 'free', notes: '' },
       { id: 'j1e5', name: 'Élévations latérales machine', group: 'Épaules', sets: 3, rMin: 12, rMax: 15, weight: 10, inc: 1, equipType: 'machine', notes: 'Pincer en haut 1 seconde' },
       { id: 'j1e6', name: 'Extension triceps poulie corde', group: 'Triceps', sets: 3, rMin: 12, rMax: 15, weight: 10, inc: 1, equipType: 'machine', notes: '' },
       { id: 'j1e7', name: 'Barre au front EZ', group: 'Triceps', sets: 3, rMin: 10, rMax: 12, weight: 10, inc: 2, equipType: 'free', notes: '' },
