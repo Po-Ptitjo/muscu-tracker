@@ -10,9 +10,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['icons/*.png'],
       manifest: {
-        name: 'RunPace — Programme 10K',
-        short_name: 'RunPace',
-        description: 'Suivi de programme running 10 km par cycles progressifs',
+        name: 'MuscuTracker — Programme muscu',
+        short_name: 'MuscuTracker',
+        description: 'Suivi de programme muscu par cycles progressifs',
         id: '/muscu-tracker/',
         theme_color: '#07090F',
         background_color: '#07090F',
@@ -29,7 +29,7 @@ export default defineConfig({
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
         // ↓ Noms uniques pour éviter les conflits
-        cacheId: 'runpace-v6',
+        cacheId: 'muscuTracker-v1',
         cleanupOutdatedCaches: true,
         runtimeCaching: [
           {
