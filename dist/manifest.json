@@ -6,8 +6,8 @@
   "background_color": "#07090F",
   "display": "standalone",
   "orientation": "portrait",
-  "start_url": "./",
-  "scope": "./",
+  "start_url": "/muscu-tracker/",
+  "scope": "/muscu-tracker/",
   "icons": [
     {
       "src": "icons/icon-192.png",
