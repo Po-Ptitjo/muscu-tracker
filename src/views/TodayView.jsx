@@ -1,6 +1,25 @@
-import { useState, useCallback } from 'react'
-import { Dumbbell, Flame, X, Check, Plus, Minus, ChevronLeft, ChevronRight, TrendingUp, TrendingDown } from 'lucide-react'
+import { useState, useCallback, useEffect } from 'react'
+import { Dumbbell, Flame, X, Check, Plus, Minus, ChevronLeft, ChevronRight, TrendingUp, TrendingDown, Save } from 'lucide-react'
 import { MUSCLE_GROUPS, calcNextWeight } from '../data/muscuData'
+
+const SESSION_DRAFT_KEY = 'muscu_session_draft'
+
+function saveDraft(sessionId, sessionSets, exIdx) {
+  try {
+    localStorage.setItem(SESSION_DRAFT_KEY, JSON.stringify({ sessionId, sessionSets, exIdx }))
+  } catch {}
+}
+
+function loadDraft() {
+  try {
+    const raw = localStorage.getItem(SESSION_DRAFT_KEY)
+    return raw ? JSON.parse(raw) : null
+  } catch { return null }
+}
+
+function clearDraft() {
+  try { localStorage.removeItem(SESSION_DRAFT_KEY) } catch {}
+}
 
 // ─── Rest selector ────────────────────────────────────────────────────────
 const REST_OPTIONS = [
@@ -90,40 +109,25 @@ function SetRow({ setNum, set, onUpdate, onToggle, rMin, rMax }) {
 }
 
 // ─── Exercise panel ────────────────────────────────────────────────────────
-function ExercisePanel({ ex, progression, restDefault, onSetsChange }) {
-  const [sets, setSets] = useState(() => {
-    const suggestedWeight = progression?.[ex.exerciseId]?.weight ?? ex.weight
-    return Array.from({ length: ex.sets }, (_, i) => ({
-      id: i,
-      weight: suggestedWeight,
-      reps: ex.rMax,
-      done: false,
-    }))
-  })
+function ExercisePanel({ ex, progression, restDefault, sets, onSetsChange }) {
   const [restTime, setRestTime] = useState(restDefault || 90)
 
   const prog = progression?.[ex.exerciseId]
   const groupColor = MUSCLE_GROUPS[ex.group] || '#888'
 
   const updateSet = (idx, field, value) => {
-    setSets(prev => {
-      const next = prev.map((s, i) => i === idx ? { ...s, [field]: value } : s)
-      onSetsChange(ex.exerciseId, next.filter(s => s.done))
-      return next
-    })
+    const next = sets.map((s, i) => i === idx ? { ...s, [field]: value } : s)
+    onSetsChange(ex.exerciseId, next)
   }
 
   const toggleSet = (idx) => {
-    setSets(prev => {
-      const next = prev.map((s, i) => i === idx ? { ...s, done: !s.done } : s)
-      onSetsChange(ex.exerciseId, next.filter(s => s.done))
-      return next
-    })
+    const next = sets.map((s, i) => i === idx ? { ...s, done: !s.done } : s)
+    onSetsChange(ex.exerciseId, next)
   }
 
   const addSet = () => {
     const lastSet = sets[sets.length - 1]
-    setSets(prev => [...prev, { id: prev.length, weight: lastSet?.weight ?? ex.weight, reps: ex.rMin, done: false }])
+    onSetsChange(ex.exerciseId, [...sets, { id: sets.length, weight: lastSet?.weight ?? ex.weight, reps: ex.rMin, done: false }])
   }
 
   const doneSets = sets.filter(s => s.done).length
@@ -212,8 +216,10 @@ export default function TodayView({
   completeSession, settings,
 }) {
   const [activeSession, setActiveSession] = useState(null)
-  const [completedSets, setCompletedSets] = useState({}) // { exerciseId: [sets] }
+  // sessionSets: { exerciseId: [{ id, weight, reps, done }] } — ALL sets (not just done)
+  const [sessionSets, setSessionSets] = useState({})
   const [currentExIdx, setCurrentExIdx] = useState(0)
+  const [saveFlash, setSaveFlash] = useState(false)
 
   const dateStr = new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })
   const DOW_MAP = { 1: 'Lundi', 2: 'Mardi', 3: 'Mercredi', 4: 'Jeudi', 5: 'Vendredi', 6: 'Samedi', 0: 'Dimanche' }
@@ -223,22 +229,70 @@ export default function TodayView({
   const nextPending = currentSessions.find(s => s.status === 'pending' || s.status === 'moved')
   const totalDone = cycles.flatMap(c => c.weeks.flatMap(w => w.sessions)).filter(s => s.status === 'done').length
 
+  // Build initial sets for a given session
+  const buildInitialSets = (session, progression) => {
+    const result = {}
+    session.exercises.forEach(ex => {
+      const suggestedWeight = progression?.[ex.exerciseId]?.weight ?? ex.weight
+      result[ex.exerciseId] = Array.from({ length: ex.sets }, (_, i) => ({
+        id: i, weight: suggestedWeight, reps: ex.rMax, done: false,
+      }))
+    })
+    return result
+  }
+
   const startSession = (session) => {
     const di = currentSessions.findIndex(s => s.id === session.id)
-    setActiveSession({ ...session, dayIndex: di })
-    setCompletedSets({})
-    setCurrentExIdx(0)
+    const sess = { ...session, dayIndex: di }
+    const progression = getProgressionForSession(activeCycle, activeWeek, di)
+
+    // Try to restore draft
+    const draft = loadDraft()
+    if (draft && draft.sessionId === session.id) {
+      setSessionSets(draft.sessionSets)
+      setCurrentExIdx(draft.exIdx ?? 0)
+    } else {
+      setSessionSets(buildInitialSets(session, progression))
+      setCurrentExIdx(0)
+    }
+    setActiveSession(sess)
   }
 
   const handleSetsChange = useCallback((exerciseId, sets) => {
-    setCompletedSets(prev => ({ ...prev, [exerciseId]: sets }))
+    setSessionSets(prev => ({ ...prev, [exerciseId]: sets }))
   }, [])
+
+  // Auto-save draft whenever sessionSets or currentExIdx changes
+  useEffect(() => {
+    if (activeSession) {
+      saveDraft(activeSession.id, sessionSets, currentExIdx)
+    }
+  }, [sessionSets, currentExIdx, activeSession])
+
+  const handleSaveDraft = () => {
+    if (activeSession) {
+      saveDraft(activeSession.id, sessionSets, currentExIdx)
+      setSaveFlash(true)
+      setTimeout(() => setSaveFlash(false), 1500)
+    }
+  }
+
+  const cancelSession = () => {
+    // Keep the draft so they can resume later
+    setActiveSession(null)
+  }
 
   const finishSession = () => {
     if (!activeSession) return
+    // Pass only done sets to completeSession
+    const completedSets = {}
+    Object.entries(sessionSets).forEach(([exId, sets]) => {
+      completedSets[exId] = sets.filter(s => s.done)
+    })
     completeSession(activeCycle, activeWeek, activeSession.id, completedSets)
+    clearDraft()
     setActiveSession(null)
-    setCompletedSets({})
+    setSessionSets({})
   }
 
   // ─── Active session view ──────────────────────────────────────────────
@@ -246,8 +300,8 @@ export default function TodayView({
     const di = activeSession.dayIndex
     const progression = getProgressionForSession(activeCycle, activeWeek, di)
     const exercises = activeSession.exercises
-    const totalDoneEx = Object.keys(completedSets).length
-    const doneSetsCount = Object.values(completedSets).reduce((t, sets) => t + sets.length, 0)
+    const totalDoneEx = exercises.filter(ex => (sessionSets[ex.exerciseId] || []).some(s => s.done)).length
+    const doneSetsCount = Object.values(sessionSets).reduce((t, sets) => t + sets.filter(s => s.done).length, 0)
 
     return (
       <div className="flex flex-col h-full">
@@ -255,19 +309,24 @@ export default function TodayView({
         <div className="flex-shrink-0 px-4 py-4"
           style={{ background: `${activeSession.color}22`, borderBottom: `1px solid ${activeSession.color}33` }}>
           <div className="flex items-center justify-between mb-3">
-            <button onClick={() => setActiveSession(null)}
+            <button onClick={cancelSession}
               className="flex items-center gap-1.5 font-body text-sm px-3 py-1.5 rounded-xl transition-all active:scale-95"
               style={{ background: 'rgba(0,0,0,0.3)', color: '#EDF2F7', border: '1px solid rgba(255,255,255,0.15)' }}>
-              <X size={14} /> Annuler
+              <X size={14} /> Quitter
             </button>
             <div className="text-center">
               <p className="font-body text-[10px] uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.5)' }}>EN COURS</p>
               <p className="font-display text-base font-bold text-white" style={{ letterSpacing: '-0.01em' }}>{activeSession.title}</p>
             </div>
-            <div className="text-right" style={{ minWidth: 60 }}>
-              <p className="font-display text-lg text-white">{totalDoneEx}/{exercises.length}</p>
-              <p className="font-body text-[10px]" style={{ color: 'rgba(255,255,255,0.5)' }}>exercices</p>
-            </div>
+            <button onClick={handleSaveDraft}
+              className="flex items-center gap-1.5 font-body text-sm px-3 py-1.5 rounded-xl transition-all active:scale-95"
+              style={{
+                background: saveFlash ? 'rgba(0,214,143,0.25)' : 'rgba(0,0,0,0.3)',
+                color: saveFlash ? '#00D68F' : '#EDF2F7',
+                border: `1px solid ${saveFlash ? 'rgba(0,214,143,0.5)' : 'rgba(255,255,255,0.15)'}`,
+              }}>
+              <Save size={14} /> {saveFlash ? 'Sauvegardé !' : 'Sauvegarder'}
+            </button>
           </div>
           {/* Progress bar */}
           <div className="h-1 rounded-full overflow-hidden" style={{ background: 'rgba(0,0,0,0.3)' }}>
@@ -277,7 +336,7 @@ export default function TodayView({
           {/* Exercise tabs */}
           <div className="flex gap-1.5 mt-3 overflow-x-auto scrollbar-hide pb-1">
             {exercises.map((ex, i) => {
-              const done = (completedSets[ex.exerciseId]?.length ?? 0) > 0
+              const done = (sessionSets[ex.exerciseId] || []).some(s => s.done)
               const isActive = i === currentExIdx
               return (
                 <button key={ex.exerciseId} onClick={() => setCurrentExIdx(i)}
@@ -301,6 +360,7 @@ export default function TodayView({
               ex={exercises[currentExIdx]}
               progression={progression}
               restDefault={settings?.restDefault || 90}
+              sets={sessionSets[exercises[currentExIdx].exerciseId] || []}
               onSetsChange={handleSetsChange}
             />
           )}
@@ -337,12 +397,39 @@ export default function TodayView({
   }
 
   // ─── Default view (no active session) ─────────────────────────────────
+  const draft = loadDraft()
+  const draftSession = draft ? currentSessions.find(s => s.id === draft.sessionId) : null
+
   return (
     <div className="px-4 py-6 space-y-5 pb-8">
       <div>
         <p className="font-body text-xs uppercase tracking-widest mb-1" style={{ color: '#3D4F63' }}>{dateStr}</p>
         <h1 className="font-display text-4xl text-text-primary" style={{ letterSpacing: '-0.02em' }}>Aujourd'hui</h1>
       </div>
+
+      {/* Draft resume banner */}
+      {draftSession && (
+        <div className="rounded-2xl px-4 py-3 flex items-center gap-3"
+          style={{ background: 'rgba(251,191,36,0.1)', border: '1px solid rgba(251,191,36,0.35)' }}>
+          <span className="text-xl">⏸</span>
+          <div className="flex-1">
+            <p className="font-body text-xs font-semibold" style={{ color: '#FBB123' }}>Séance en cours — non terminée</p>
+            <p className="font-body text-xs" style={{ color: '#7A8BA3' }}>{draftSession.title}</p>
+          </div>
+          <div className="flex gap-2">
+            <button onClick={() => clearDraft()}
+              className="px-2.5 py-1 rounded-lg font-body text-xs transition-all active:scale-95"
+              style={{ background: 'rgba(255,255,255,0.06)', color: '#7A8BA3' }}>
+              Effacer
+            </button>
+            <button onClick={() => startSession(draftSession)}
+              className="px-3 py-1 rounded-lg font-body text-xs font-semibold transition-all active:scale-95"
+              style={{ background: 'rgba(251,179,36,0.2)', color: '#FBB123' }}>
+              Reprendre
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Quick stats */}
       <div className="flex gap-3">
