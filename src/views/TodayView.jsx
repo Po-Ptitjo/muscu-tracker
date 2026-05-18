@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { Dumbbell, Flame, X, Check, Plus, Minus, ChevronLeft, ChevronRight, TrendingUp, TrendingDown, Save } from 'lucide-react'
 import { MUSCLE_GROUPS, calcNextWeight } from '../data/muscuData'
 
@@ -54,9 +54,35 @@ function RestSelector({ value, onChange }) {
 function SetRow({ setNum, set, onUpdate, onToggle, rMin, rMax }) {
   const roundWeight = (w, step = 0.5) => Math.max(0, Math.round(w / step) * step)
 
+  // Scroll molette sur les reps
+  const handleRepsWheel = (e) => {
+    e.preventDefault()
+    const delta = e.deltaY > 0 ? -1 : 1
+    onUpdate('reps', Math.max(0, set.reps + delta))
+  }
+
+  // Glisser tactile vertical sur les reps
+  const touchStartY = useRef(null)
+  const touchStartReps = useRef(null)
+  const handleRepsTouchStart = (e) => {
+    touchStartY.current = e.touches[0].clientY
+    touchStartReps.current = set.reps
+  }
+  const handleRepsTouchMove = (e) => {
+    if (touchStartY.current === null) return
+    const dy = touchStartY.current - e.touches[0].clientY
+    const delta = Math.round(dy / 10)
+    const next = Math.max(0, touchStartReps.current + delta)
+    if (next !== set.reps) onUpdate('reps', next)
+  }
+  const handleRepsTouchEnd = () => {
+    touchStartY.current = null
+    touchStartReps.current = null
+  }
+
   return (
     <div className="grid items-center gap-2 mb-2"
-      style={{ gridTemplateColumns: '24px 1fr 72px 40px', opacity: set.done ? 0.55 : 1 }}>
+      style={{ gridTemplateColumns: '24px 1fr 80px 44px', opacity: set.done ? 0.55 : 1 }}>
       <span className="font-body text-xs text-center font-semibold" style={{ color: '#3D4F63' }}>
         {setNum}
       </span>
@@ -85,14 +111,29 @@ function SetRow({ setNum, set, onUpdate, onToggle, rMin, rMax }) {
       </div>
 
       {/* Reps */}
-      <input
-        type="number"
-        value={set.reps}
-        min="0"
-        onChange={e => onUpdate('reps', parseInt(e.target.value) || 0)}
-        className="text-center font-body font-bold rounded-lg py-2 outline-none"
-        style={{ background: 'rgba(255,255,255,0.07)', border: '1.5px solid rgba(255,255,255,0.1)', color: '#EDF2F7', fontSize: '16px' }}
-      />
+      <div className="relative">
+        <input
+          type="number"
+          value={set.reps}
+          min="0"
+          onChange={e => onUpdate('reps', parseInt(e.target.value) || 0)}
+          onWheel={handleRepsWheel}
+          onTouchStart={handleRepsTouchStart}
+          onTouchMove={handleRepsTouchMove}
+          onTouchEnd={handleRepsTouchEnd}
+          className="w-full text-center font-body font-bold rounded-lg py-2 outline-none select-none"
+          style={{ background: 'rgba(255,255,255,0.07)', border: '1.5px solid rgba(255,255,255,0.1)', color: '#EDF2F7', fontSize: '16px', touchAction: 'none' }}
+        />
+        {/* Indicateur scroll */}
+        <div className="absolute -top-2 left-1/2 -translate-x-1/2 flex flex-col items-center leading-none pointer-events-none"
+          style={{ color: '#3D4F63', fontSize: '8px', lineHeight: 1 }}>
+          ▲
+        </div>
+        <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 flex flex-col items-center leading-none pointer-events-none"
+          style={{ color: '#3D4F63', fontSize: '8px', lineHeight: 1 }}>
+          ▼
+        </div>
+      </div>
 
       {/* Done check */}
       <button onClick={onToggle}
@@ -167,25 +208,29 @@ function ExercisePanel({ ex, progression, restDefault, sets, onSetsChange }) {
 
       {/* Sets */}
       <div className="px-4 pt-3 pb-2">
-        {/* Column headers */}
-        <div className="grid mb-1.5"
-          style={{ gridTemplateColumns: '24px 1fr 72px 40px', gap: '8px' }}>
-          {['#', 'Poids (kg)', 'Reps', '✓'].map(h => (
-            <p key={h} className="font-body text-center text-[10px] uppercase tracking-wider" style={{ color: '#3D4F63' }}>{h}</p>
-          ))}
-        </div>
+        <div className="overflow-x-auto scrollbar-hide" style={{ margin: '0 -4px' }}>
+          <div style={{ minWidth: '320px', padding: '0 4px' }}>
+            {/* Column headers */}
+            <div className="grid mb-1.5"
+              style={{ gridTemplateColumns: '24px 1fr 80px 44px', gap: '8px' }}>
+              {['#', 'Poids (kg)', 'Reps', '✓'].map(h => (
+                <p key={h} className="font-body text-center text-[10px] uppercase tracking-wider" style={{ color: '#3D4F63' }}>{h}</p>
+              ))}
+            </div>
 
-        {sets.map((set, idx) => (
-          <SetRow
-            key={set.id}
-            setNum={idx + 1}
-            set={set}
-            rMin={ex.rMin}
-            rMax={ex.rMax}
-            onUpdate={(field, value) => updateSet(idx, field, value)}
-            onToggle={() => toggleSet(idx)}
-          />
-        ))}
+            {sets.map((set, idx) => (
+              <SetRow
+                key={set.id}
+                setNum={idx + 1}
+                set={set}
+                rMin={ex.rMin}
+                rMax={ex.rMax}
+                onUpdate={(field, value) => updateSet(idx, field, value)}
+                onToggle={() => toggleSet(idx)}
+              />
+            ))}
+          </div>
+        </div>
 
         <button onClick={addSet}
           className="w-full py-2 mt-1 rounded-xl flex items-center justify-center gap-2 font-body text-xs font-medium transition-all active:scale-95"
