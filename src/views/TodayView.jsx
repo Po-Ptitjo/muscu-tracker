@@ -364,12 +364,9 @@ export default function TodayView({
               onSetsChange={handleSetsChange}
             />
           )}
-        </div>
 
-        {/* Navigation footer */}
-        <div className="fixed bottom-0 left-0 right-0 px-4 pb-6 pt-3"
-          style={{ background: 'rgba(7,9,15,0.97)', backdropFilter: 'blur(20px)', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-          <div className="flex gap-2 max-w-[430px] mx-auto">
+          {/* Navigation buttons — dans le scroll, toujours visibles en bas */}
+          <div className="flex gap-2 mt-2 mb-4">
             {currentExIdx > 0 && (
               <button onClick={() => setCurrentExIdx(i => i - 1)}
                 className="flex-1 py-3.5 rounded-2xl font-body font-semibold text-sm flex items-center justify-center gap-2 transition-all active:scale-95"
