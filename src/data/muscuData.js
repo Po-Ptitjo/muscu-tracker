@@ -39,10 +39,10 @@ export const BASE_PROGRAM = [
     sub: 'Pectoraux · Épaules · Triceps',
     color: '#a855f7',
     exercises: [
-      { id: 'j1e1', name: 'Développé couché machine', group: 'Pectoraux', sets: 4, rMin: 8, rMax: 12, weight: 25, inc: 5, equipType: 'machine', notes: 'Contrôle en descente, pause en haut' },
+      { id: 'j1e1', name: 'Développé couché machine', group: 'Pectoraux', sets: 4, rMin: 8, rMax: 12, weight: 30, inc: 5, equipType: 'machine', notes: 'Contrôle en descente, pause en haut' },
       { id: 'j1e2', name: 'Développé incliné haltères', group: 'Pectoraux', sets: 4, rMin: 8, rMax: 12, weight: 20, inc: 2, equipType: 'free', notes: 'Coudes à 45°' },
-      { id: 'j1e3', name: 'Écarté poulie basse', group: 'Pectoraux', sets: 3, rMin: 12, rMax: 15, weight: 15, inc: 5, equipType: 'machine', notes: 'Contraction maximale' },
-      { id: 'j1e4', name: 'Développé épaules haltères', group: 'Épaules', sets: 4, rMin: 8, rMax: 12, weight: 16, inc: 2, equipType: 'free', notes: '' },
+      { id: 'j1e3', name: 'Écarté poulie basse', group: 'Pectoraux', sets: 3, rMin: 12, rMax: 15, weight: 20, inc: 5, equipType: 'machine', notes: 'Contraction maximale, étirement en bas' },
+      { id: 'j1e4', name: 'Développé épaules haltères', group: 'Épaules', sets: 4, rMin: 8, rMax: 12, weight: 14, inc: 2, equipType: 'free', notes: '' },
       { id: 'j1e5', name: 'Élévations latérales machine', group: 'Épaules', sets: 3, rMin: 12, rMax: 15, weight: 10, inc: 1, equipType: 'machine', notes: 'Pincer en haut 1 seconde' },
       { id: 'j1e6', name: 'Extension triceps poulie corde', group: 'Triceps', sets: 3, rMin: 12, rMax: 15, weight: 10, inc: 1, equipType: 'machine', notes: '' },
       { id: 'j1e7', name: 'Barre au front EZ', group: 'Triceps', sets: 3, rMin: 10, rMax: 12, weight: 10, inc: 2, equipType: 'free', notes: '' },
@@ -54,12 +54,12 @@ export const BASE_PROGRAM = [
     sub: 'Dos · Biceps · Trapèzes',
     color: '#3b82f6',
     exercises: [
-      { id: 'j2e1', name: 'Tirage vertical prise large', group: 'Dos', sets: 4, rMin: 8, rMax: 12, weight: 25, inc: 5, equipType: 'machine', notes: 'Coudes vers les hanches' },
-      { id: 'j2e2', name: 'Tirage horizontal câble', group: 'Dos', sets: 4, rMin: 10, rMax: 12, weight: 20, inc: 5, equipType: 'machine', notes: 'Serrer les omoplates' },
-      { id: 'j2e3', name: 'Pull-over machine', group: 'Dos', sets: 3, rMin: 12, rMax: 15, weight: 25, inc: 5, equipType: 'machine', notes: '' },
-      { id: 'j2e4', name: 'Curl barre EZ', group: 'Biceps', sets: 4, rMin: 10, rMax: 12, weight: 15, inc: 2, equipType: 'free', notes: '' },
-      { id: 'j2e5', name: 'Curl marteau haltères', group: 'Biceps', sets: 3, rMin: 10, rMax: 12, weight: 14, inc: 1, equipType: 'free', notes: '' },
-      { id: 'j2e6', name: 'Shrugs haltères', group: 'Trapèzes', sets: 4, rMin: 12, rMax: 15, weight: 20, inc: 2, equipType: 'free', notes: 'Tenir 1 seconde en haut' },
+      { id: 'j2e1', name: 'Tirage vertical prise large', group: 'Dos', sets: 4, rMin: 8, rMax: 12, weight: 30, inc: 5, equipType: 'machine', notes: 'Coudes vers les hanches' },
+      { id: 'j2e2', name: 'Tirage horizontal câble', group: 'Dos', sets: 4, rMin: 10, rMax: 12, weight: 30, inc: 5, equipType: 'machine', notes: 'Serrer les omoplates' },
+      { id: 'j2e3', name: 'Pull-over machine', group: 'Dos', sets: 3, rMin: 12, rMax: 15, weight: 30, inc: 5, equipType: 'machine', notes: '' },
+      { id: 'j2e4', name: 'Curl pupitre', group: 'Biceps', sets: 4, rMin: 10, rMax: 12, weight: 6, inc: 2, equipType: 'free', notes: '' },
+      { id: 'j2e5', name: 'Curl marteau haltères', group: 'Biceps', sets: 3, rMin: 10, rMax: 12, weight: 5, inc: 1, equipType: 'free', notes: '' },
+      { id: 'j2e6', name: 'Shrugs haltères', group: 'Trapèzes', sets: 4, rMin: 12, rMax: 15, weight: 24, inc: 2, equipType: 'free', notes: 'Tenir 1 seconde en haut' },
     ],
   },
   {
@@ -78,17 +78,17 @@ export const BASE_PROGRAM = [
   },
   {
     id: 'j4',
-    name: 'JOUR D — Full',
-    sub: 'Corps entier · Volume',
+    name: 'JOUR D — Pecs/Dos/Biceps',
+    sub: 'Pectoraux · Dos · Biceps',
     color: '#f59e0b',
     exercises: [
-      { id: 'j4e1', name: 'Développé incliné haltéres', group: 'Pectoraux', sets: 3, rMin: 10, rMax: 12, weight: 20, inc: 5, equipType: 'machine', notes: '' },
-      { id: 'j4e2', name: 'Tirage vertical prise serrée', group: 'Dos', sets: 3, rMin: 10, rMax: 12, weight: 25, inc: 5, equipType: 'machine', notes: '' },
-      { id: 'j4e3', name: 'Développé épaules haltères', group: 'Épaules', sets: 3, rMin: 10, rMax: 12, weight: 16, inc: 2, equipType: 'free', notes: '' },
-      { id: 'j4e4', name: 'Curl incliné haltères', group: 'Biceps', sets: 3, rMin: 10, rMax: 12, weight: 12, inc: 1, equipType: 'free', notes: '' },
-      { id: 'j4e5', name: 'Dips assistés machine', group: 'Triceps', sets: 3, rMin: 10, rMax: 12, weight: 21, inc: 5, equipType: 'machine', notes: 'Assistance = résistance' },
-      { id: 'j4e6', name: 'Leg curl assis', group: 'Jambes', sets: 3, rMin: 12, rMax: 15, weight: 25, inc: 5, equipType: 'machine', notes: '' },
-      { id: 'j4e7', name: 'Planche abdominale', group: 'Abdos', sets: 3, rMin: 30, rMax: 60, weight: 0, inc: 0, equipType: 'bodyweight', notes: 'Durée en secondes' },
+      { id: 'j4e1', name: 'Écarté poulie basse', group: 'Pectoraux', sets: 3, rMin: 12, rMax: 15, weight: 10, inc: 5, equipType: 'machine', notes: 'Contraction maximale, étirement en bas' },
+      { id: 'j4e2', name: 'Développé couché haltères prise neutre', group: 'Pectoraux', sets: 3, rMin: 10, rMax: 12, weight: 20, inc: 2, equipType: 'free', notes: 'Prise neutre, moins de stress épaules' },
+      { id: 'j4e3', name: 'Écarté machine (pec deck)', group: 'Pectoraux', sets: 3, rMin: 12, rMax: 15, weight: 15, inc: 5, equipType: 'machine', notes: 'Contraction maximale, contrôle total' },
+      { id: 'j4e4', name: 'Tirage vertical prise serrée neutre', group: 'Dos', sets: 3, rMin: 10, rMax: 12, weight: 30, inc: 5, equipType: 'machine', notes: 'Prise différente du mercredi, coudes vers les hanches' },
+      { id: 'j4e5', name: 'Pull-over machine', group: 'Dos', sets: 3, rMin: 12, rMax: 15, weight: 30, inc: 5, equipType: 'machine', notes: 'Grand dorsal en étirement complet' },
+      { id: 'j4e6', name: 'Curl incliné haltères', group: 'Biceps', sets: 3, rMin: 12, rMax: 12, weight: 6, inc: 1, equipType: 'free', notes: 'Étirement maximal, charges légères intentionnellement' },
+      { id: 'j4e7', name: 'Curl concentration haltères', group: 'Biceps', sets: 3, rMin: 12, rMax: 12, weight: 6, inc: 1, equipType: 'free', notes: 'Un bras à la fois, contraction maximale' },
     ],
   },
 ]
@@ -98,8 +98,15 @@ export const BASE_PROGRAM = [
 // Chaque cycle = 4 semaines (S1, S2, S3, S4 allégée)
 // ────────────────────────────────────────────────────────────
 
-export function buildInitialCycles(baseWeights = null) {
-  return [buildCycle(1, baseWeights || getDefaultWeights())]
+export function buildInitialCycles(baseWeights = null, decisions = {}, facility = null) {
+  // Use S-1 weights if not provided
+  const defaultBaseWeights = {
+    j1e1: 30, j1e2: 20, j1e3: 20, j1e4: 14, j1e5: 10, j1e6: 10, j1e7: 10,
+    j2e1: 30, j2e2: 30, j2e3: 30, j2e4: 6, j2e5: 5, j2e6: 24,
+    j3e1: 20, j3e2: 30, j3e3: 25, j3e4: 16, j3e5: 35, j3e6: 30,
+    j4e1: 10, j4e2: 20, j4e3: 15, j4e4: 30, j4e5: 30, j4e6: 6, j4e7: 6,
+  }
+  return [buildCycle(1, baseWeights || defaultBaseWeights, decisions, facility)]
 }
 
 export function getDefaultWeights() {
@@ -112,7 +119,7 @@ export function getDefaultWeights() {
   return weights
 }
 
-export function buildCycle(cycleId, baseWeights) {
+export function buildCycle(cycleId, baseWeights, decisions = {}, facility = null) {
   const COLORS = ['#a855f7', '#3b82f6', '#22c55e', '#f59e0b', '#ef4444']
   const PHASES = ['Construction', 'Développement', 'Intensité', 'Décharge', 'Performance']
 
@@ -121,46 +128,66 @@ export function buildCycle(cycleId, baseWeights) {
     name: `Cycle ${cycleId}`,
     phase: PHASES[(cycleId - 1) % PHASES.length],
     color: COLORS[(cycleId - 1) % COLORS.length],
-    weeks: buildWeeks(cycleId, baseWeights),
+    weeks: buildWeeks(cycleId, baseWeights, decisions, facility),
   }
 }
 
-function buildWeeks(cycleId, baseWeights) {
+function buildWeeks(cycleId, baseWeights, decisions = {}, facility = null) {
   const weeks = []
-  // 4 semaines par cycle: 3 normales + 1 allégée
-  for (let w = 1; w <= 4; w++) {
-    const isDeload = w === 4
+  // 3 semaines par cycle: 3 normales (pas de deload pour débutant)
+  for (let w = 1; w <= 3; w++) {
     weeks.push({
       number: w,
       label: `Semaine ${w}`,
-      type: isDeload ? 'deload' : 'normal',
-      sessions: buildSessions(cycleId, w, baseWeights, isDeload),
+      type: 'normal',
+      sessions: buildSessions(cycleId, w, baseWeights, false, decisions, facility),
     })
   }
   return weeks
 }
 
-function buildSessions(cycleId, weekNum, baseWeights, isDeload) {
+function buildSessions(cycleId, weekNum, baseWeights, isDeload, decisions = {}, facility = null) {
   // Répartition sur la semaine: L, M, J, S
   const DAYS = ['Lundi', 'Mardi', 'Jeudi', 'Samedi']
 
   return BASE_PROGRAM.map((day, di) => {
     const sessionExercises = day.exercises.map(ex => {
-      // Progression: chaque semaine normale +1 pas d'incrément progressif sur les reps
-      // Semaine décharge: -20% du poids, rMin uniquement
+      // Progression: chaque semaine normale — pas de deload pour débutant
+      // Calcul du poids cible à partir des poids de base.
+      // Pour les exercices en haltères (free), diviser le poids total par 2 pour obtenir
+      // le poids d'une haltère (sauf si l'exercice est explicitement 'concentration').
       const baseW = baseWeights[ex.id] ?? ex.weight
       let targetWeight = baseW
 
-      if (isDeload) {
-        // Semaine allégée: 80% du poids de base, seulement rMin reps
-        targetWeight = Math.max(0, Math.round(baseW * 0.8 / (ex.equipType === 'machine' ? 5 : 1)) * (ex.equipType === 'machine' ? 5 : 1))
+      if (ex.equipType === 'free' && !/concentration|curl/i.test(ex.name)) {
+        const perDumbbell = baseW / 2
+        targetWeight = roundToNearestDumbbell(perDumbbell, facility)
+      }
+
+      // Gestion de la surcharge progressive temporaire : si la décision précédente
+      // demandait d'ajouter 1 série (add_set), on augmente le nombre de séries pour
+      // cette séance uniquement et on ajoute une info 'tempExtraSet' indiquant
+      // le poids conseillé pour cette série supplémentaire (arrondi selon la salle).
+      const decision = decisions?.[ex.id]
+      let sets = ex.sets
+      let tempExtraSet = null
+      if (decision === 'add_set') {
+        sets = ex.sets + 1
+        if (ex.equipType === 'free') {
+          // poids de l'extra set = plus grand haltère <= targetWeight (pour salle donnée)
+          const extra = getNearestDumbbellBelowOrEqual(targetWeight, facility)
+          tempExtraSet = { weight: extra, note: 'Série supplémentaire temporaire (salle)' }
+        } else {
+          // pour machines: garder même poids
+          tempExtraSet = { weight: targetWeight, note: 'Série supplémentaire temporaire (machine)' }
+        }
       }
 
       return {
         exerciseId: ex.id,
         name: ex.name,
         group: ex.group,
-        sets: isDeload ? Math.max(2, ex.sets - 1) : ex.sets,
+        sets: sets,
         rMin: ex.rMin,
         rMax: ex.rMax,
         weight: targetWeight,
@@ -169,6 +196,8 @@ function buildSessions(cycleId, weekNum, baseWeights, isDeload) {
         notes: ex.notes,
         // Suivi des séries réalisées (rempli pendant la séance)
         completedSets: [],
+        // Info non persistante: série supplémentaire temporaire selon salle
+        tempExtraSet,
       }
     })
 
@@ -224,6 +253,25 @@ export function calcNextWeight(ex, completedSets) {
   const someBelowMin = validSets.some(s => s.reps < ex.rMin)
 
   if (allAtMax) {
+    // Si toutes les séries configurées ont atteint rMax → ajouter 1 série au même poids
+    const configuredSets = ex.sets || validSets.length
+    if (validSets.length === configuredSets) {
+      return {
+        weight: currentW,
+        decision: 'add_set',
+        msg: `⚡ Toutes les séries à rMax → ajouter 1 série au même poids (${currentW}kg)`,
+      }
+    }
+    // Si une série supplémentaire existait déjà et est maxée → augmenter le poids et revenir au nombre de séries configuré
+    if (validSets.length > configuredSets) {
+      const newW = roundWeight(currentW + inc, ex.equipType)
+      return {
+        weight: newW,
+        decision: 'up',
+        msg: `🔥 Série supplémentaire maxée → +${inc}kg (${newW}kg)`,
+      }
+    }
+    // Cas par défaut: augmenter
     const newW = roundWeight(currentW + inc, ex.equipType)
     return {
       weight: newW,
@@ -279,9 +327,42 @@ function roundWeight(w, equipType) {
   return Math.round(w * 2) / 2
 }
 
+const DUMBBELL_SETS = {
+  A: [4,5,6,7,8,9,10,12,14,16,18,20,22,24,26,28,30],
+  B: [4,6,8,10,12,14,16,18,20,22,24,26,28,30],
+}
+
+function roundToNearestDumbbell(w, facility = null) {
+  let candidates
+  if (facility === 'A') candidates = DUMBBELL_SETS.A
+  else if (facility === 'B') candidates = DUMBBELL_SETS.B
+  else candidates = Array.from(new Set([...DUMBBELL_SETS.A, ...DUMBBELL_SETS.B])).sort((a,b)=>a-b)
+
+  let best = candidates[0]
+  let bestDiff = Math.abs(candidates[0] - w)
+  for (const c of candidates) {
+    const d = Math.abs(c - w)
+    if (d < bestDiff) {
+      best = c
+      bestDiff = d
+    }
+  }
+  return best
+}
+
+export function getNearestDumbbellBelowOrEqual(w, facility = null) {
+  const set = facility === 'A' ? DUMBBELL_SETS.A : facility === 'B' ? DUMBBELL_SETS.B : Array.from(new Set([...DUMBBELL_SETS.A, ...DUMBBELL_SETS.B])).sort((a,b)=>a-b)
+  // find max c <= w, else return smallest
+  for (let i = set.length - 1; i >= 0; i--) {
+    if (set[i] <= w) return set[i]
+  }
+  return set[0]
+}
+
 // Calcule les poids pour le prochain cycle en fonction des sessions du cycle précédent
 export function computeBaseWeightsForNextCycle(previousCycleSessions) {
   const weights = {}
+  const decisions = {}
 
   // Pour chaque exercice, trouver la dernière série complétée du cycle
   previousCycleSessions.forEach(session => {
@@ -291,24 +372,28 @@ export function computeBaseWeightsForNextCycle(previousCycleSessions) {
       const prog = calcNextWeight(ex, ex.completedSets)
       // On garde le poids calculé le plus récent
       weights[ex.exerciseId] = prog.weight
+      decisions[ex.exerciseId] = prog.decision
     })
   })
 
-  return weights
+  return { weights, decisions }
 }
 
 // Génère le cycle suivant avec progression automatique
-export function generateNextCycle(allCycles, customWeights = null) {
+export function generateNextCycle(allCycles, customWeights = null, facility = null) {
   const lastCycle = allCycles[allCycles.length - 1]
   if (!lastCycle) return null
 
   let baseWeights
+  let decisions = {}
   if (customWeights) {
     baseWeights = customWeights
   } else {
     // Calculer les poids depuis le dernier cycle
     const allSessions = lastCycle.weeks.flatMap(w => w.sessions)
-    baseWeights = computeBaseWeightsForNextCycle(allSessions)
+    const computed = computeBaseWeightsForNextCycle(allSessions)
+    baseWeights = computed.weights
+    decisions = computed.decisions
 
     // Fallback: utiliser les poids du dernier cycle pour les exercices sans données
     lastCycle.weeks[lastCycle.weeks.length - 1]?.sessions.forEach(session => {
@@ -320,5 +405,5 @@ export function generateNextCycle(allCycles, customWeights = null) {
     })
   }
 
-  return buildCycle(lastCycle.id + 1, baseWeights)
+  return buildCycle(lastCycle.id + 1, baseWeights, decisions, facility)
 }

@@ -62,7 +62,7 @@ function ExerciseRow({ ex, progression }) {
   )
 }
 
-function SessionCard({ session, cycleColor, progression, onStatusChange, onStartSession }) {
+function SessionCard({ session, cycleColor, progression, onStatusChange, onStartSession, dayIndex }) {
   const [expanded, setExpanded] = useState(false)
   const statusInfo = STATUS_CONFIG[session.status] || STATUS_CONFIG.pending
   const isDone = session.status === 'done'
@@ -127,7 +127,7 @@ function SessionCard({ session, cycleColor, progression, onStatusChange, onStart
           ))}
           <div className="p-3 flex gap-2">
             {!isDone && (
-              <button onClick={() => onStartSession(session)}
+              <button onClick={() => onStartSession(session, dayIndex)}
                 className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-body text-sm font-semibold transition-all active:scale-95"
                 style={{ background: `${session.color || cycleColor}22`, color: session.color || cycleColor, border: `1px solid ${session.color || cycleColor}44` }}>
                 <Play size={14} fill="currentColor" />
@@ -203,13 +203,14 @@ export default function ProgramView({
             <SessionCard
               key={session.id}
               session={session}
-              cycleColor={currentCycle?.color}
-              progression={progression}
-              onStatusChange={onStatusChange}
-              onStartSession={onStartSession}
-            />
-          )
-        })}
+                      dayIndex={di}
+                      cycleColor={currentCycle?.color}
+                      progression={progression}
+                      onStatusChange={onStatusChange}
+                      onStartSession={onStartSession}
+                    />
+                  )
+                })}
 
         {currentSessions.length === 0 && (
           <div className="text-center py-12">
