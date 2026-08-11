@@ -87,8 +87,8 @@ export const BASE_PROGRAM = [
       { id: 'j4e3', name: 'Écarté machine (pec deck)', group: 'Pectoraux', sets: 3, rMin: 12, rMax: 15, weight: 15, inc: 5, equipType: 'machine', notes: 'Contraction maximale, contrôle total' },
       { id: 'j4e4', name: 'Tirage vertical prise serrée neutre', group: 'Dos', sets: 3, rMin: 10, rMax: 12, weight: 30, inc: 5, equipType: 'machine', notes: 'Prise différente du mercredi, coudes vers les hanches' },
       { id: 'j4e5', name: 'Pull-over machine', group: 'Dos', sets: 3, rMin: 12, rMax: 15, weight: 30, inc: 5, equipType: 'machine', notes: 'Grand dorsal en étirement complet' },
-      { id: 'j4e6', name: 'Curl incliné haltères', group: 'Biceps', sets: 3, rMin: 12, rMax: 12, weight: 6, inc: 1, equipType: 'free', notes: 'Étirement maximal, charges légères intentionnellement' },
-     { id: 'j2e4', name: 'Curl pupitre', group: 'Biceps', sets: 3, rMin: 12, rMax: 12, weight: 6, inc: 1, equipType: 'free', notes: 'Un bras à la fois, contraction maximale' },
+      { id: 'j4e6', name: 'Curl incliné haltères', group: 'Biceps', sets: 3, rMin: 10, rMax: 12, weight: 6, inc: 1, equipType: 'free', notes: 'Étirement maximal, charges légères intentionnellement' },
+     { id: 'j2e4', name: 'Curl pupitre', group: 'Biceps', sets: 3, rMin: 10, rMax: 12, weight: 6, inc: 1, equipType: 'free', notes: 'Un bras à la fois, contraction maximale' },
     ],
   },
 ]
