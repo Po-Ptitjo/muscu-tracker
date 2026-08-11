@@ -5,6 +5,8 @@ import ProgramView from './views/ProgramView'
 import TodayView from './views/TodayView'
 import ProgressView from './views/ProgressView'
 import SettingsView from './views/SettingsView'
+import HistoryView from './views/HistoryView'
+import RanksView from './views/RanksView'
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('today')
@@ -87,6 +89,12 @@ export default function App() {
             initialSession={sessionActive}
             initialFacility={selectedFacility}
           />
+        )}
+        {activeTab === 'history' && (
+          <HistoryView cycles={cycles} />
+        )}
+        {activeTab === 'ranks' && (
+          <RanksView cycles={cycles} settings={settings} />
         )}
         {activeTab === 'progress' && (
           <ProgressView getStats={getStats} />

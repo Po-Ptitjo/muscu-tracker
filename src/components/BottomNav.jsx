@@ -1,8 +1,10 @@
-import { Dumbbell, Calendar, BarChart2, Settings } from 'lucide-react'
+import { Dumbbell, Calendar, BarChart2, Settings, Archive, Star } from 'lucide-react'
 
 const NAV_ITEMS = [
   { id: 'program', label: 'Programme', Icon: Calendar },
   { id: 'today', label: "Aujourd'hui", Icon: Dumbbell },
+  { id: 'history', label: 'Historique', Icon: Archive },
+  { id: 'ranks', label: 'Rangs', Icon: Star },
   { id: 'progress', label: 'Progression', Icon: BarChart2 },
   { id: 'settings', label: 'Réglages', Icon: Settings },
 ]
