@@ -80,25 +80,34 @@ export function rankFromElo(elo) {
 }
 
 // Compute elos for all exercises across cycles and derive a global ELO as average of per-exercise ELOs
+// This version aggregates completed sets across all sessions for the same exercise id
+// so the score uses the best series across multiple days (duplicates kept in sessions).
 export function computeAllElos(cycles, baseWeights) {
-  // flatten last done session per exercise to get most recent performance per exercise
-  const exerciseLatest = {}
+  // collect all occurrences per exercise id from done sessions
+  const occurrences = {}
+  const ID_CANONICAL = { 'j4e7': 'j2e4' }
   cycles.flatMap(c => c.weeks.flatMap(w => w.sessions)).forEach(sess => {
     if (sess.status !== 'done') return
     sess.exercises.forEach(ex => {
-      const prev = exerciseLatest[ex.exerciseId]
-      if (!prev || new Date(sess.completedAt) > new Date(prev.completedAt || 0)) {
-        exerciseLatest[ex.exerciseId] = { ...ex, completedAt: sess.completedAt }
-      }
+      const canonicalId = ID_CANONICAL[ex.exerciseId] || ex.exerciseId
+      occurrences[canonicalId] = occurrences[canonicalId] || []
+      // clone but preserve original exerciseId for reference
+      occurrences[canonicalId].push({ ...ex, originalExerciseId: ex.exerciseId, completedAt: sess.completedAt })
     })
   })
 
   const results = {}
   const elos = []
   const percents = []
-  for (const id in exerciseLatest) {
-    const res = computeExerciseElo(exerciseLatest[id], baseWeights)
-    results[id] = { ...res, name: exerciseLatest[id].name, group: exerciseLatest[id].group }
+
+  for (const id in occurrences) {
+    const occs = occurrences[id]
+    // Merge completedSets from all occurrences to let performance pick best series across days
+    const merged = { ...occs[0] }
+    merged.completedSets = occs.flatMap(o => o.completedSets || [])
+    // keep name/group from merged
+    const res = computeExerciseElo(merged, baseWeights)
+    results[id] = { ...res, name: merged.name, group: merged.group }
     if (!res.provisional && typeof res.elo === 'number') {
       elos.push(res.elo)
       if (typeof res.percent === 'number') percents.push(res.percent)
