@@ -58,17 +58,19 @@ export function rankFromPercent(percent) {
   return selected
 }
 
-// Compute elo for a single exercise
+// Compute elo/points for a single exercise
 export function computeExerciseElo(exercise, baseWeights) {
   const { provisional, baseline, performance } = computeExercisePerformanceMetric(exercise, baseWeights)
-  if (provisional) return { provisional: true, elo: null, percent: null, rank: RANKS[0] }
+  if (provisional) return { provisional: true, elo: null, percent: null, rank: RANKS[0], points: 0 }
   const percent = baseline > 0 ? (performance / baseline) * 100 : 100
   const rank = rankFromPercent(percent)
   const elo = center(rank)
-  return { provisional: false, elo, percent: Math.round(percent), rank }
+  // Use the center ELO of the rank as the exercise points (can be adjusted later)
+  const points = elo
+  return { provisional: false, elo, percent: Math.round(percent), rank, points }
 }
 
-// Compute elos for all exercises across cycles (returns per-ex id and global elo)
+// Compute elos/points for all exercises across cycles (returns per-ex id and global points sum)
 export function computeAllElos(cycles, baseWeights) {
   // flatten last done session per exercise to get most recent performance per exercise
   const exerciseLatest = {}
@@ -83,13 +85,14 @@ export function computeAllElos(cycles, baseWeights) {
   })
 
   const results = {}
-  const elos = []
+  const pointsList = []
   for (const id in exerciseLatest) {
     const res = computeExerciseElo(exerciseLatest[id], baseWeights)
     results[id] = { ...res, name: exerciseLatest[id].name, group: exerciseLatest[id].group }
-    if (!res.provisional && res.elo) elos.push(res.elo)
+    if (!res.provisional && res.points) pointsList.push(res.points)
   }
 
-  const globalElo = elos.length ? Math.round(elos.reduce((a,b)=>a+b,0)/elos.length) : null
-  return { perExercise: results, globalElo }
+  // Global ELO (as requested) is the sum of points of all exercises
+  const globalPoints = pointsList.length ? pointsList.reduce((a,b)=>a+b,0) : 0
+  return { perExercise: results, globalElo: globalPoints }
 }

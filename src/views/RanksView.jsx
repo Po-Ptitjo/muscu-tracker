@@ -5,7 +5,7 @@ export default function RanksView({ cycles, settings }) {
   const baseWeights = settings?.baseWeights || {}
   const { perExercise, globalElo } = computeAllElos(cycles, baseWeights)
 
-  const rows = Object.entries(perExercise).sort((a,b)=> (b[1].elo||0) - (a[1].elo||0))
+  const rows = Object.entries(perExercise).sort((a,b)=> (b[1].points||0) - (a[1].points||0))
 
   return (
     <div className="px-4 py-6 pb-8">
@@ -15,9 +15,9 @@ export default function RanksView({ cycles, settings }) {
       </div>
 
       <div className="rounded-2xl p-4 mb-5" style={{ background: '#0D1117', border: '1px solid rgba(255,255,255,0.07)' }}>
-        <p className="font-body text-sm">ELO global</p>
+        <p className="font-body text-sm">Points globaux</p>
         <h2 className="font-display text-3xl" style={{ color: '#A78BFA' }}>{globalElo ? globalElo : '— (provisoire)'}</h2>
-        <p className="font-body text-xs" style={{ color: '#7A8BA3' }}>Moyenne des ELOs d'exercice (exercices avec performances réelles)</p>
+        <p className="font-body text-xs" style={{ color: '#7A8BA3' }}>Somme des points de chaque exercice (exercices avec performances réelles)</p>
       </div>
 
       <div className="space-y-3">
@@ -33,8 +33,8 @@ export default function RanksView({ cycles, settings }) {
                   <p className="font-body text-xs" style={{ color: '#3D4F63' }}>Provisoire — aucune série enregistrée</p>
                 ) : (
                   <>
-                    <p className="font-display text-xl" style={{ color: '#A78BFA' }}>{info.elo}</p>
-                    <p className="font-body text-xs" style={{ color: '#7A8BA3' }}>{info.rank?.name} — {info.percent}%</p>
+                    <p className="font-display text-xl" style={{ color: '#A78BFA' }}>{info.points}</p>
+                    <p className="font-body text-xs" style={{ color: '#7A8BA3' }}>{info.rank?.name} — {info.percent}% · ELO {info.elo}</p>
                   </>
                 )}
               </div>
