@@ -85,11 +85,14 @@ export function rankFromElo(elo) {
 export function computeAllElos(cycles, baseWeights) {
   // collect all occurrences per exercise id from done sessions
   const occurrences = {}
+  const ID_CANONICAL = { 'j4e7': 'j2e4' }
   cycles.flatMap(c => c.weeks.flatMap(w => w.sessions)).forEach(sess => {
     if (sess.status !== 'done') return
     sess.exercises.forEach(ex => {
-      occurrences[ex.exerciseId] = occurrences[ex.exerciseId] || []
-      occurrences[ex.exerciseId].push({ ...ex, completedAt: sess.completedAt })
+      const canonicalId = ID_CANONICAL[ex.exerciseId] || ex.exerciseId
+      occurrences[canonicalId] = occurrences[canonicalId] || []
+      // clone but preserve original exerciseId for reference
+      occurrences[canonicalId].push({ ...ex, originalExerciseId: ex.exerciseId, completedAt: sess.completedAt })
     })
   })
 
