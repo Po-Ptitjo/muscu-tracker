@@ -70,7 +70,16 @@ export function computeExerciseElo(exercise, baseWeights) {
   return { provisional: false, elo, percent: Math.round(percent), rank, points }
 }
 
-// Compute elos for all exercises across cycles and derive a global ELO from average %
+// Map an ELO to a rank by elo ranges
+export function rankFromElo(elo) {
+  if (typeof elo !== 'number' || isNaN(elo)) return RANKS[0]
+  for (const r of RANKS) {
+    if (elo >= r.eloMin && elo <= r.eloMax) return r
+  }
+  return RANKS[RANKS.length - 1]
+}
+
+// Compute elos for all exercises across cycles and derive a global ELO as average of per-exercise ELOs
 export function computeAllElos(cycles, baseWeights) {
   // flatten last done session per exercise to get most recent performance per exercise
   const exerciseLatest = {}
@@ -85,26 +94,30 @@ export function computeAllElos(cycles, baseWeights) {
   })
 
   const results = {}
-  const percentList = []
+  const elos = []
+  const percents = []
   for (const id in exerciseLatest) {
     const res = computeExerciseElo(exerciseLatest[id], baseWeights)
     results[id] = { ...res, name: exerciseLatest[id].name, group: exerciseLatest[id].group }
-    if (!res.provisional && typeof res.percent === 'number') percentList.push(res.percent)
+    if (!res.provisional && typeof res.elo === 'number') {
+      elos.push(res.elo)
+      if (typeof res.percent === 'number') percents.push(res.percent)
+    }
   }
 
   // If no real performances exist, mark global as provisional
-  if (percentList.length === 0) {
+  if (elos.length === 0) {
     return { perExercise: results, globalElo: null, globalPercent: null, globalRank: RANKS[0], provisional: true }
   }
 
-  const avgPercent = percentList.reduce((a,b)=>a+b,0) / percentList.length
-  const globalRank = rankFromPercent(avgPercent)
-  const globalElo = center(globalRank)
+  const avgElo = Math.round(elos.reduce((a,b)=>a+b,0) / elos.length)
+  const avgPercent = percents.length ? Math.round(percents.reduce((a,b)=>a+b,0) / percents.length) : null
+  const globalRank = rankFromElo(avgElo)
 
   return {
     perExercise: results,
-    globalElo,
-    globalPercent: Math.round(avgPercent),
+    globalElo: avgElo,
+    globalPercent: avgPercent,
     globalRank,
     provisional: false,
   }
