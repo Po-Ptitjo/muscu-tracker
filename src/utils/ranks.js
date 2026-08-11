@@ -70,7 +70,7 @@ export function computeExerciseElo(exercise, baseWeights) {
   return { provisional: false, elo, percent: Math.round(percent), rank, points }
 }
 
-// Compute elos/points for all exercises across cycles (returns per-ex id and global points sum)
+// Compute elos for all exercises across cycles and derive a global ELO from average %
 export function computeAllElos(cycles, baseWeights) {
   // flatten last done session per exercise to get most recent performance per exercise
   const exerciseLatest = {}
@@ -85,14 +85,27 @@ export function computeAllElos(cycles, baseWeights) {
   })
 
   const results = {}
-  const pointsList = []
+  const percentList = []
   for (const id in exerciseLatest) {
     const res = computeExerciseElo(exerciseLatest[id], baseWeights)
     results[id] = { ...res, name: exerciseLatest[id].name, group: exerciseLatest[id].group }
-    if (!res.provisional && res.points) pointsList.push(res.points)
+    if (!res.provisional && typeof res.percent === 'number') percentList.push(res.percent)
   }
 
-  // Global ELO (as requested) is the sum of points of all exercises
-  const globalPoints = pointsList.length ? pointsList.reduce((a,b)=>a+b,0) : 0
-  return { perExercise: results, globalElo: globalPoints }
+  // If no real performances exist, mark global as provisional
+  if (percentList.length === 0) {
+    return { perExercise: results, globalElo: null, globalPercent: null, globalRank: RANKS[0], provisional: true }
+  }
+
+  const avgPercent = percentList.reduce((a,b)=>a+b,0) / percentList.length
+  const globalRank = rankFromPercent(avgPercent)
+  const globalElo = center(globalRank)
+
+  return {
+    perExercise: results,
+    globalElo,
+    globalPercent: Math.round(avgPercent),
+    globalRank,
+    provisional: false,
+  }
 }

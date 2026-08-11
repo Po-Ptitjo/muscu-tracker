@@ -3,7 +3,7 @@ import { computeAllElos } from '../utils/ranks'
 
 export default function RanksView({ cycles, settings }) {
   const baseWeights = settings?.baseWeights || {}
-  const { perExercise, globalElo } = computeAllElos(cycles, baseWeights)
+  const { perExercise, globalElo, globalPercent, globalRank, provisional } = computeAllElos(cycles, baseWeights)
 
   const rows = Object.entries(perExercise).sort((a,b)=> (b[1].points||0) - (a[1].points||0))
 
@@ -15,9 +15,15 @@ export default function RanksView({ cycles, settings }) {
       </div>
 
       <div className="rounded-2xl p-4 mb-5" style={{ background: '#0D1117', border: '1px solid rgba(255,255,255,0.07)' }}>
-        <p className="font-body text-sm">Points globaux</p>
-        <h2 className="font-display text-3xl" style={{ color: '#A78BFA' }}>{globalElo ? globalElo : '— (provisoire)'}</h2>
-        <p className="font-body text-xs" style={{ color: '#7A8BA3' }}>Somme des points de chaque exercice (exercices avec performances réelles)</p>
+        <p className="font-body text-sm">ELO global</p>
+        {provisional ? (
+          <h2 className="font-display text-3xl" style={{ color: '#A78BFA' }}>— (provisoire)</h2>
+        ) : (
+          <>
+            <h2 className="font-display text-3xl" style={{ color: '#A78BFA' }}>{globalElo}</h2>
+            <p className="font-body text-xs" style={{ color: '#7A8BA3' }}>{globalRank?.name} — {globalPercent}% (moyenne des exercices)</p>
+          </>
+        )}
       </div>
 
       <div className="space-y-3">
