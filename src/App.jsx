@@ -5,6 +5,7 @@ import ProgramView from './views/ProgramView'
 import TodayView from './views/TodayView'
 import ProgressView from './views/ProgressView'
 import SettingsView from './views/SettingsView'
+import HistoryView from './views/HistoryView'
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('today')
@@ -87,6 +88,9 @@ export default function App() {
             initialSession={sessionActive}
             initialFacility={selectedFacility}
           />
+        )}
+        {activeTab === 'history' && (
+          <HistoryView cycles={cycles} />
         )}
         {activeTab === 'progress' && (
           <ProgressView getStats={getStats} />
