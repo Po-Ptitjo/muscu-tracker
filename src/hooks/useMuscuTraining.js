@@ -1,72 +1,13 @@
 import { useState, useEffect, useCallback } from 'react'
 import {
   buildInitialCycles, generateNextCycle, getDefaultWeights,
-  BASE_PROGRAM, calcNextWeight, getProgressionForWeek, findExInProgram,
+  BASE_PROGRAM, calcNextWeight, getProgressionForWeek,
 } from '../data/muscuData'
 import { loadState, saveState, cloneDeep } from '../utils/storage'
 
 const DEFAULT_SETTINGS = {
   restDefault: 90,
   baseWeights: getDefaultWeights(),
-}
-
-// Migrate old exercise IDs to new ones (keep performances). Mapping keys are oldId -> targetId.
-function migrateOldExerciseIds(state) {
-  if (!state || !state.cycles) return state
-  const mapping = {
-    // curl concentration (j4e7) -> curl pupitre (j2e4)
-    'j4e7': 'j2e4',
-  }
-  const program = state.program || BASE_PROGRAM
-  let changed = false
-
-  state.cycles.forEach(cycle => {
-    cycle.weeks.forEach(week => {
-      week.sessions.forEach(session => {
-        // iterate backwards to allow splicing
-        for (let i = session.exercises.length - 1; i >= 0; i--) {
-          const ex = session.exercises[i]
-          const targetId = mapping[ex.exerciseId]
-          if (!targetId) continue
-
-          const targetDef = findExInProgram(targetId, program) || {}
-          const existingIndex = session.exercises.findIndex(e => e.exerciseId === targetId)
-
-          if (existingIndex !== -1) {
-            // merge completedSets into existing target exercise
-            const targetEx = session.exercises[existingIndex]
-            targetEx.completedSets = (targetEx.completedSets || []).concat(ex.completedSets || [])
-            // remove old exercise entry
-            session.exercises.splice(i, 1)
-            changed = true
-          } else {
-            // update exercise id and metadata but keep completedSets
-            ex.exerciseId = targetId
-            ex.name = targetDef.name || ex.name
-            ex.group = targetDef.group || ex.group
-            ex.rMin = targetDef.rMin || ex.rMin
-            ex.rMax = targetDef.rMax || ex.rMax
-            ex.equipType = targetDef.equipType || ex.equipType
-            changed = true
-          }
-        }
-      })
-    })
-  })
-
-  // migrate baseWeights keys
-  if (state.settings && state.settings.baseWeights) {
-    Object.keys(mapping).forEach(oldId => {
-      const targetId = mapping[oldId]
-      if (state.settings.baseWeights[oldId]) {
-        if (!state.settings.baseWeights[targetId]) state.settings.baseWeights[targetId] = state.settings.baseWeights[oldId]
-        delete state.settings.baseWeights[oldId]
-        changed = true
-      }
-    })
-  }
-
-  return state
 }
 
 function buildInitialState() {
@@ -83,11 +24,7 @@ function buildInitialState() {
 export function useMuscuTraining() {
   const [state, setState] = useState(() => {
     const saved = loadState()
-    if (saved?.cycles?.length) {
-      // migrate legacy exercise ids if present
-      migrateOldExerciseIds(saved)
-      return saved
-    }
+    if (saved?.cycles?.length) return saved
     return buildInitialState()
   })
 
