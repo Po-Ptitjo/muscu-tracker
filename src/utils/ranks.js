@@ -29,22 +29,26 @@ function center(rank) {
 
 // Compute performance metric for an exercise entry
 // baseline: baseWeight * baselineReps
-// performance: use the max weight across completed sets multiplied by the exercise rMax
+// performance: choose best set by weight*reps, but ignore sets with reps < rMin
+// This restores the previous behavior while enforcing rMin filtering.
 export function computeExercisePerformanceMetric(exercise, baseWeights) {
   const baseW = (baseWeights && baseWeights[exercise.exerciseId]) || exercise.weight || 0
   const baseReps = exercise.rMax || exercise.rMin || 1
   const baseline = baseW * baseReps
 
-  const sets = exercise.completedSets || []
+  const sets = (exercise.completedSets || [])
+    // keep only sets that meet rMin threshold (ignore too-low reps)
+    .filter(s => (s.reps || 0) >= (exercise.rMin || 0))
+
   if (sets.length === 0) return { provisional: true, baseline, performance: 0 }
 
-  // Use the maximum weight lifted in any completed set for this exercise
-  const maxWeight = sets.reduce((m, s) => Math.max(m, s.weight || 0), 0)
-  // Performance is defined as maxWeight * exercise.rMax (cap at rMax)
-  const repsForScore = exercise.rMax || exercise.rMin || 1
-  const performance = maxWeight * repsForScore
+  // pick best set by weight * reps (original behavior)
+  const best = sets.reduce((acc, s) => {
+    const val = (s.weight || 0) * (s.reps || 0)
+    return val > (acc.val || 0) ? { set: s, val } : acc
+  }, {})
 
-  return { provisional: false, baseline, performance }
+  return { provisional: false, baseline, performance: best.val || 0 }
 }
 
 // Map percent to rank entry (choose highest rank whose percent <= value)
