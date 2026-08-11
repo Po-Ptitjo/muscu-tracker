@@ -29,26 +29,22 @@ function center(rank) {
 
 // Compute performance metric for an exercise entry
 // baseline: baseWeight * baselineReps
-// performance: choose best set by weight*reps, but ignore sets with reps < rMin
-// This restores the previous behavior while enforcing rMin filtering.
+// performance: use the max weight across completed sets multiplied by the exercise rMax
 export function computeExercisePerformanceMetric(exercise, baseWeights) {
   const baseW = (baseWeights && baseWeights[exercise.exerciseId]) || exercise.weight || 0
   const baseReps = exercise.rMax || exercise.rMin || 1
   const baseline = baseW * baseReps
 
-  const sets = (exercise.completedSets || [])
-    // keep only sets that meet rMin threshold (ignore too-low reps)
-    .filter(s => (s.reps || 0) >= (exercise.rMin || 0))
-
+  const sets = exercise.completedSets || []
   if (sets.length === 0) return { provisional: true, baseline, performance: 0 }
 
-  // pick best set by weight * reps (original behavior)
-  const best = sets.reduce((acc, s) => {
-    const val = (s.weight || 0) * (s.reps || 0)
-    return val > (acc.val || 0) ? { set: s, val } : acc
-  }, {})
+  // Use the maximum weight lifted in any completed set for this exercise
+  const maxWeight = sets.reduce((m, s) => Math.max(m, s.weight || 0), 0)
+  // Performance is defined as maxWeight * exercise.rMax (cap at rMax)
+  const repsForScore = exercise.rMax || exercise.rMin || 1
+  const performance = maxWeight * repsForScore
 
-  return { provisional: false, baseline, performance: best.val || 0 }
+  return { provisional: false, baseline, performance }
 }
 
 // Map percent to rank entry (choose highest rank whose percent <= value)
@@ -84,34 +80,25 @@ export function rankFromElo(elo) {
 }
 
 // Compute elos for all exercises across cycles and derive a global ELO as average of per-exercise ELOs
-// This version aggregates completed sets across all sessions for the same exercise id
-// so the score uses the best series across multiple days (duplicates kept in sessions).
 export function computeAllElos(cycles, baseWeights) {
-  // collect all occurrences per exercise id from done sessions
-  const occurrences = {}
-  const ID_CANONICAL = { 'j4e7': 'j2e4' }
+  // flatten last done session per exercise to get most recent performance per exercise
+  const exerciseLatest = {}
   cycles.flatMap(c => c.weeks.flatMap(w => w.sessions)).forEach(sess => {
     if (sess.status !== 'done') return
     sess.exercises.forEach(ex => {
-      const canonicalId = ID_CANONICAL[ex.exerciseId] || ex.exerciseId
-      occurrences[canonicalId] = occurrences[canonicalId] || []
-      // clone but preserve original exerciseId for reference
-      occurrences[canonicalId].push({ ...ex, originalExerciseId: ex.exerciseId, completedAt: sess.completedAt })
+      const prev = exerciseLatest[ex.exerciseId]
+      if (!prev || new Date(sess.completedAt) > new Date(prev.completedAt || 0)) {
+        exerciseLatest[ex.exerciseId] = { ...ex, completedAt: sess.completedAt }
+      }
     })
   })
 
   const results = {}
   const elos = []
   const percents = []
-
-  for (const id in occurrences) {
-    const occs = occurrences[id]
-    // Merge completedSets from all occurrences to let performance pick best series across days
-    const merged = { ...occs[0] }
-    merged.completedSets = occs.flatMap(o => o.completedSets || [])
-    // keep name/group from merged
-    const res = computeExerciseElo(merged, baseWeights)
-    results[id] = { ...res, name: merged.name, group: merged.group }
+  for (const id in exerciseLatest) {
+    const res = computeExerciseElo(exerciseLatest[id], baseWeights)
+    results[id] = { ...res, name: exerciseLatest[id].name, group: exerciseLatest[id].group }
     if (!res.provisional && typeof res.elo === 'number') {
       elos.push(res.elo)
       if (typeof res.percent === 'number') percents.push(res.percent)
