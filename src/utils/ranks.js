@@ -29,7 +29,7 @@ function center(rank) {
 
 // Compute performance metric for an exercise entry
 // baseline: baseWeight * baselineReps
-// performance: best set weight * reps (if available)
+// performance: use the max weight across completed sets multiplied by the exercise rMax
 export function computeExercisePerformanceMetric(exercise, baseWeights) {
   const baseW = (baseWeights && baseWeights[exercise.exerciseId]) || exercise.weight || 0
   const baseReps = exercise.rMax || exercise.rMin || 1
@@ -38,13 +38,13 @@ export function computeExercisePerformanceMetric(exercise, baseWeights) {
   const sets = exercise.completedSets || []
   if (sets.length === 0) return { provisional: true, baseline, performance: 0 }
 
-  // pick best set by weight*reps
-  const best = sets.reduce((acc, s) => {
-    const val = (s.weight || 0) * (s.reps || 0)
-    return val > (acc.val || 0) ? { set: s, val } : acc
-  }, {})
+  // Use the maximum weight lifted in any completed set for this exercise
+  const maxWeight = sets.reduce((m, s) => Math.max(m, s.weight || 0), 0)
+  // Performance is defined as maxWeight * exercise.rMax (cap at rMax)
+  const repsForScore = exercise.rMax || exercise.rMin || 1
+  const performance = maxWeight * repsForScore
 
-  return { provisional: false, baseline, performance: best.val || 0 }
+  return { provisional: false, baseline, performance }
 }
 
 // Map percent to rank entry (choose highest rank whose percent <= value)
