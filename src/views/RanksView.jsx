@@ -19,10 +19,21 @@ export default function RanksView({ cycles, settings }) {
         {provisional ? (
           <h2 className="font-display text-3xl" style={{ color: '#A78BFA' }}>— (provisoire)</h2>
         ) : (
-          <>
-            <h2 className="font-display text-3xl" style={{ color: '#A78BFA' }}>{globalElo}</h2>
-            <p className="font-body text-xs" style={{ color: '#7A8BA3' }}>{globalRank?.name} — {globalPercent}% (moyenne des exercices)</p>
-          </>
+          <div className="flex items-center">
+            {/* Badge left of global ELO */}
+            <div style={{ width: 56, height: 56, flex: '0 0 56px', marginRight: 12 }}>
+              <img
+                src={`/badges/${(globalRank && globalRank.id) || 'netherite'}.png`}
+                alt={(globalRank && globalRank.name) || 'Badge'}
+                style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: 8 }}
+                onError={(e) => { e.target.onerror = null; e.target.src = '' }}
+              />
+            </div>
+            <div>
+              <h2 className="font-display text-3xl" style={{ color: '#A78BFA' }}>{globalElo}</h2>
+              <p className="font-body text-xs" style={{ color: '#7A8BA3' }}>{globalRank?.name} — {globalPercent}% (moyenne des exercices)</p>
+            </div>
+          </div>
         )}
       </div>
 
@@ -30,21 +41,32 @@ export default function RanksView({ cycles, settings }) {
         {rows.map(([id, info]) => (
           <div key={id} className="rounded-2xl overflow-hidden" style={{ background: '#0D1117', border: '1px solid rgba(255,255,255,0.06)' }}>
             <div className="px-4 py-3 flex items-center justify-between">
-              <div>
-                <p className="font-body text-sm font-semibold text-text-primary">{info.name}</p>
-                <p className="font-body text-xs" style={{ color: '#7A8BA3' }}>{info.group}</p>
+                <div className="flex items-center">
+                  {/* Exercise badge */}
+                  <div style={{ width: 44, height: 44, flex: '0 0 44px', marginRight: 12 }}>
+                    <img
+                      src={`/badges/${(info.rank && info.rank.id) || 'netherite'}.png`}
+                      alt={(info.rank && info.rank.name) || 'Badge'}
+                      style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: 8 }}
+                      onError={(e) => { e.target.onerror = null; e.target.src = '' }}
+                    />
+                  </div>
+                  <div>
+                    <p className="font-body text-sm font-semibold text-text-primary">{info.name}</p>
+                    <p className="font-body text-xs" style={{ color: '#7A8BA3' }}>{info.group}</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  {info.provisional ? (
+                    <p className="font-body text-xs" style={{ color: '#3D4F63' }}>Provisoire — aucune série enregistrée</p>
+                  ) : (
+                    <>
+                      <p className="font-display text-xl" style={{ color: '#A78BFA' }}>{info.points}</p>
+                      <p className="font-body text-xs" style={{ color: '#7A8BA3' }}>{info.rank?.name} — {info.percent}% · ELO {info.elo}</p>
+                    </>
+                  )}
+                </div>
               </div>
-              <div className="text-right">
-                {info.provisional ? (
-                  <p className="font-body text-xs" style={{ color: '#3D4F63' }}>Provisoire — aucune série enregistrée</p>
-                ) : (
-                  <>
-                    <p className="font-display text-xl" style={{ color: '#A78BFA' }}>{info.points}</p>
-                    <p className="font-body text-xs" style={{ color: '#7A8BA3' }}>{info.rank?.name} — {info.percent}% · ELO {info.elo}</p>
-                  </>
-                )}
-              </div>
-            </div>
           </div>
         ))}
 
