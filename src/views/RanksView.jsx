@@ -5,6 +5,22 @@ export default function RanksView({ cycles, settings }) {
   const baseWeights = settings?.baseWeights || {}
   const { perExercise, globalElo, globalPercent, globalRank, provisional } = computeAllElos(cycles, baseWeights)
 
+  const RANK_COLORS = {
+    coal: '#000000',
+    copper: '#D66D48',
+    iron: '#C1C1C1',
+    emerald: '#5CB458',
+    gold: '#E9B115',
+    diamond: '#27B29A',
+    netherite: '#4F3C3E',
+  }
+
+  function getRankColor(rankId) {
+    if (!rankId) return 'rgba(255,255,255,0.07)'
+    const prefix = rankId.split('-')[0]
+    return RANK_COLORS[prefix] || 'rgba(255,255,255,0.07)'
+  }
+
   const rows = Object.entries(perExercise).sort((a,b)=> (b[1].points||0) - (a[1].points||0))
 
   return (
@@ -14,7 +30,7 @@ export default function RanksView({ cycles, settings }) {
         <h1 className="font-display text-4xl text-text-primary" style={{ letterSpacing: '-0.02em' }}>Système de rangs</h1>
       </div>
 
-      <div className="rounded-2xl p-4 mb-5" style={{ background: '#0D1117', border: '1px solid rgba(255,255,255,0.07)' }}>
+      <div className="rounded-2xl p-4 mb-5" style={{ background: '#324256', border: `3px solid ${getRankColor(globalRank?.id)}` }}>
         <p className="font-body text-sm">ELO global</p>
         {provisional ? (
           <h2 className="font-display text-3xl" style={{ color: '#A78BFA' }}>— (provisoire)</h2>
@@ -39,7 +55,7 @@ export default function RanksView({ cycles, settings }) {
 
       <div className="space-y-3">
         {rows.map(([id, info]) => (
-          <div key={id} className="rounded-2xl overflow-hidden" style={{ background: '#0D1117', border: '1px solid rgba(255,255,255,0.06)' }}>
+          <div key={id} className="rounded-2xl overflow-hidden" style={{ background: '#324256', border: `3px solid ${getRankColor(info.rank?.id)}` }}>
             <div className="px-4 py-3 flex items-center justify-between">
                 <div className="flex items-center">
                   {/* Exercise badge */}
