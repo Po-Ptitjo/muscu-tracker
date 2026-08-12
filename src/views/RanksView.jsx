@@ -23,10 +23,10 @@ export default function RanksView({ cycles, settings }) {
             {/* Badge left of global ELO */}
             <div style={{ width: 56, height: 56, flex: '0 0 56px', marginRight: 12 }}>
               <img
-                src={`/badges/${(globalRank && globalRank.id) || 'netherite'}.png`}
+                              src={`${import.meta.env.BASE_URL || '/'}badges/${(globalRank && globalRank.id) || 'netherite'}.png`}
                 alt={(globalRank && globalRank.name) || 'Badge'}
                 style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: 8 }}
-                onError={(e) => { e.target.onerror = null; e.target.src = '' }}
+                              onError={(e) => { e.target.onerror = null; e.target.style.display = 'none' }}
               />
             </div>
             <div>
@@ -45,10 +45,10 @@ export default function RanksView({ cycles, settings }) {
                   {/* Exercise badge */}
                   <div style={{ width: 44, height: 44, flex: '0 0 44px', marginRight: 12 }}>
                     <img
-                      src={`/badges/${(info.rank && info.rank.id) || 'netherite'}.png`}
+                      src={`${import.meta.env.BASE_URL || '/'}badges/${(info.rank && info.rank.id) || 'netherite'}.png`}
                       alt={(info.rank && info.rank.name) || 'Badge'}
                       style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: 8 }}
-                      onError={(e) => { e.target.onerror = null; e.target.src = '' }}
+                      onError={(e) => { e.target.onerror = null; e.target.style.display = 'none' }}
                     />
                   </div>
                   <div>
