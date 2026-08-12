@@ -29,7 +29,8 @@ function center(rank) {
 
 // Compute performance metric for an exercise entry
 // baseline: baseWeight * baselineReps
-// performance: use the max weight across completed sets multiplied by the exercise rMax
+// performance: if there is at least one valid set (reps >= rMin),
+// use the maximum weight among valid sets multiplied by rMax
 export function computeExercisePerformanceMetric(exercise, baseWeights) {
   let baseW = (baseWeights && baseWeights[exercise.exerciseId]) || exercise.weight || 0
   let baseReps = exercise.rMax || exercise.rMin || 1
@@ -46,11 +47,16 @@ export function computeExercisePerformanceMetric(exercise, baseWeights) {
   const sets = exercise.completedSets || []
   if (sets.length === 0) return { provisional: true, baseline, performance: 0 }
 
-  // Use the maximum weight lifted in any completed set for this exercise
-  const maxWeight = sets.reduce((m, s) => Math.max(m, s.weight || 0), 0)
-  // Performance is defined as maxWeight * exercise.rMax (cap at rMax)
-  const repsForScore = exercise.rMax || exercise.rMin || 1
-  const performance = maxWeight * repsForScore
+  const rMin = typeof exercise.rMin === 'number' ? exercise.rMin : 1
+  const rMax = typeof exercise.rMax === 'number' ? exercise.rMax : (exercise.rMin || 1)
+
+  // Keep only sets that meet rMin
+  const validSets = sets.filter(s => (s.reps || 0) >= rMin)
+  if (validSets.length === 0) return { provisional: true, baseline, performance: 0 }
+
+  // Choose the heaviest valid set and compute performance as weight * rMax
+  const maxWeight = validSets.reduce((m, s) => Math.max(m, s.weight || 0), 0)
+  const performance = maxWeight * rMax
 
   return { provisional: false, baseline, performance }
 }
