@@ -31,8 +31,16 @@ function center(rank) {
 // baseline: baseWeight * baselineReps
 // performance: use the max weight across completed sets multiplied by the exercise rMax
 export function computeExercisePerformanceMetric(exercise, baseWeights) {
-  const baseW = (baseWeights && baseWeights[exercise.exerciseId]) || exercise.weight || 0
-  const baseReps = exercise.rMax || exercise.rMin || 1
+  let baseW = (baseWeights && baseWeights[exercise.exerciseId]) || exercise.weight || 0
+  let baseReps = exercise.rMax || exercise.rMin || 1
+
+  // Force baseline for curl pupitre and curl concentration to 6kg × 12 reps = 72
+  const exId = exercise.exerciseId || exercise.originalExerciseId || ''
+  if (exId === 'j2e4' || exId === 'j4e7') {
+    baseW = 6
+    baseReps = 12
+  }
+
   const baseline = baseW * baseReps
 
   const sets = exercise.completedSets || []
