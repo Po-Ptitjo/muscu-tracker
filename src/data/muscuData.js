@@ -57,9 +57,9 @@ export const BASE_PROGRAM = [
       { id: 'j2e1', name: 'Tirage vertical prise large', group: 'Dos', sets: 4, rMin: 8, rMax: 12, weight: 30, inc: 5, equipType: 'machine', notes: 'Coudes vers les hanches' },
       { id: 'j2e2', name: 'Tirage horizontal câble', group: 'Dos', sets: 4, rMin: 10, rMax: 12, weight: 30, inc: 5, equipType: 'machine', notes: 'Serrer les omoplates' },
       { id: 'j2e3', name: 'Pull-over machine', group: 'Dos', sets: 3, rMin: 12, rMax: 15, weight: 30, inc: 5, equipType: 'machine', notes: '' },
-      { id: 'j2e4', name: 'Curl pupitre', group: 'Biceps', sets: 4, rMin: 10, rMax: 12, weight: 6, inc: 2, equipType: 'free', notes: '' },
+      { id: 'j2e4', name: 'Curl pupitre', group: 'Biceps', sets: 3, rMin: 10, rMax: 12, weight: 6, inc: 2, equipType: 'free', notes: '' },
       { id: 'j2e5', name: 'Curl marteau haltères', group: 'Biceps', sets: 3, rMin: 10, rMax: 12, weight: 5, inc: 1, equipType: 'free', notes: '' },
-      { id: 'j2e6', name: 'Shrugs haltères', group: 'Trapèzes', sets: 4, rMin: 12, rMax: 15, weight: 24, inc: 2, equipType: 'free', notes: 'Tenir 1 seconde en haut' },
+      { id: 'j2e6', name: 'Shrugs haltères', group: 'Trapèzes', sets: 3, rMin: 12, rMax: 15, weight: 24, inc: 2, equipType: 'free', notes: 'Tenir 1 seconde en haut' },
     ],
   },
   {
@@ -72,8 +72,8 @@ export const BASE_PROGRAM = [
       { id: 'j3e2', name: 'Leg press', group: 'Jambes', sets: 4, rMin: 10, rMax: 12, weight: 30, inc: 10, equipType: 'machine', notes: 'Pieds écartés largeur épaules' },
       { id: 'j3e3', name: 'Leg curl assis', group: 'Jambes', sets: 3, rMin: 12, rMax: 15, weight: 25, inc: 5, equipType: 'machine', notes: '' },
       { id: 'j3e4', name: 'Fentes marchées haltères', group: 'Jambes', sets: 3, rMin: 10, rMax: 12, weight: 16, inc: 2, equipType: 'free', notes: 'Par jambe' },
-      { id: 'j3e5', name: 'Mollets debout machine', group: 'Mollets', sets: 4, rMin: 15, rMax: 20, weight: 35, inc: 5, equipType: 'machine', notes: 'Pause étirement en bas' },
-      { id: 'j3e6', name: 'Crunch machine', group: 'Abdos', sets: 4, rMin: 15, rMax: 20, weight: 30, inc: 5, equipType: 'machine', notes: '' },
+      { id: 'j3e5', name: 'Mollets debout machine', group: 'Mollets', sets: 3, rMin: 15, rMax: 20, weight: 35, inc: 5, equipType: 'machine', notes: 'Pause étirement en bas' },
+      { id: 'j3e6', name: 'Crunch machine', group: 'Abdos', sets: 3, rMin: 15, rMax: 20, weight: 30, inc: 5, equipType: 'machine', notes: '' },
     ],
   },
   {
