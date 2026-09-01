@@ -98,7 +98,7 @@ export const BASE_PROGRAM = [
 // Chaque cycle = 4 semaines (S1, S2, S3, S4 allégée)
 // ────────────────────────────────────────────────────────────
 
-export function buildInitialCycles(baseWeights = null, decisions = {}, facility = null) {
+export function buildInitialCycles(baseWeights = null, decisions = {}) {
   // Use S-1 weights if not provided
   const defaultBaseWeights = {
     j1e1: 30, j1e2: 20, j1e3: 20, j1e4: 14, j1e5: 10, j1e6: 10, j1e7: 10,
@@ -106,7 +106,7 @@ export function buildInitialCycles(baseWeights = null, decisions = {}, facility 
     j3e1: 20, j3e2: 30, j3e3: 25, j3e4: 16, j3e5: 35, j3e6: 30,
     j4e1: 10, j4e2: 20, j4e3: 15, j4e4: 30, j4e5: 30, j4e6: 6, j4e7: 6,
   }
-  return [buildCycle(1, baseWeights || defaultBaseWeights, decisions, facility)]
+  return [buildCycle(1, baseWeights || defaultBaseWeights, decisions)]
 }
 
 export function getDefaultWeights() {
@@ -119,7 +119,7 @@ export function getDefaultWeights() {
   return weights
 }
 
-export function buildCycle(cycleId, baseWeights, decisions = {}, facility = null) {
+export function buildCycle(cycleId, baseWeights, decisions = {}) {
   const COLORS = ['#a855f7', '#3b82f6', '#22c55e', '#f59e0b', '#ef4444']
   const PHASES = ['Construction', 'Développement', 'Intensité', 'Décharge', 'Performance']
 
@@ -128,11 +128,11 @@ export function buildCycle(cycleId, baseWeights, decisions = {}, facility = null
     name: `Cycle ${cycleId}`,
     phase: PHASES[(cycleId - 1) % PHASES.length],
     color: COLORS[(cycleId - 1) % COLORS.length],
-    weeks: buildWeeks(cycleId, baseWeights, decisions, facility),
+    weeks: buildWeeks(cycleId, baseWeights, decisions),
   }
 }
 
-function buildWeeks(cycleId, baseWeights, decisions = {}, facility = null) {
+function buildWeeks(cycleId, baseWeights, decisions = {}) {
   const weeks = []
   // 3 semaines par cycle: 3 normales (pas de deload pour débutant)
   for (let w = 1; w <= 3; w++) {
@@ -140,13 +140,13 @@ function buildWeeks(cycleId, baseWeights, decisions = {}, facility = null) {
       number: w,
       label: `Semaine ${w}`,
       type: 'normal',
-      sessions: buildSessions(cycleId, w, baseWeights, false, decisions, facility),
+      sessions: buildSessions(cycleId, w, baseWeights, false, decisions),
     })
   }
   return weeks
 }
 
-function buildSessions(cycleId, weekNum, baseWeights, isDeload, decisions = {}, facility = null) {
+function buildSessions(cycleId, weekNum, baseWeights, isDeload, decisions = {}) {
   // Répartition sur la semaine: L, M, J, S
   const DAYS = ['Lundi', 'Mardi', 'Jeudi', 'Samedi']
 
@@ -161,21 +161,19 @@ function buildSessions(cycleId, weekNum, baseWeights, isDeload, decisions = {}, 
 
       if (ex.equipType === 'free' && !/concentration|curl/i.test(ex.name)) {
         const perDumbbell = baseW / 2
-        targetWeight = roundToNearestDumbbell(perDumbbell, facility)
+        targetWeight = roundToNearestDumbbell(perDumbbell)
       }
 
       // Gestion de la surcharge progressive temporaire : si la décision précédente
       // demandait d'ajouter 1 série (add_set), on augmente le nombre de séries pour
-      // cette séance uniquement et on ajoute une info 'tempExtraSet' indiquant
-      // le poids conseillé pour cette série supplémentaire (arrondi selon la salle).
+      // cette séance uniquement via tempExtraSet. Le nombre de séries configuré
+      // (sets) reste inchangé.
       const decision = decisions?.[ex.id]
-      let sets = ex.sets
       let tempExtraSet = null
       if (decision === 'add_set') {
-        sets = ex.sets + 1
         if (ex.equipType === 'free') {
-          // poids de l'extra set = plus grand haltère <= targetWeight (pour salle donnée)
-          const extra = getNearestDumbbellBelowOrEqual(targetWeight, facility)
+          // poids de l'extra set = plus grand haltère <= targetWeight (salle A)
+          const extra = getNearestDumbbellBelowOrEqual(targetWeight)
           tempExtraSet = { weight: extra, note: 'Série supplémentaire temporaire (salle)' }
         } else {
           // pour machines: garder même poids
@@ -187,7 +185,7 @@ function buildSessions(cycleId, weekNum, baseWeights, isDeload, decisions = {}, 
         exerciseId: ex.id,
         name: ex.name,
         group: ex.group,
-        sets: sets,
+        sets: ex.sets,
         rMin: ex.rMin,
         rMax: ex.rMax,
         weight: targetWeight,
@@ -327,16 +325,10 @@ function roundWeight(w, equipType) {
   return Math.round(w * 2) / 2
 }
 
-const DUMBBELL_SETS = {
-  A: [4,5,6,7,8,9,10,12,14,16,18,20,22,24,26,28,30],
-  B: [4,6,8,10,12,14,16,18,20,22,24,26,28,30],
-}
+const DUMBBELL_SET_A = [4,5,6,7,8,9,10,12,14,16,18,20,22,24,26,28,30]
 
-function roundToNearestDumbbell(w, facility = null) {
-  let candidates
-  if (facility === 'A') candidates = DUMBBELL_SETS.A
-  else if (facility === 'B') candidates = DUMBBELL_SETS.B
-  else candidates = Array.from(new Set([...DUMBBELL_SETS.A, ...DUMBBELL_SETS.B])).sort((a,b)=>a-b)
+function roundToNearestDumbbell(w) {
+  const candidates = DUMBBELL_SET_A
 
   let best = candidates[0]
   let bestDiff = Math.abs(candidates[0] - w)
@@ -350,8 +342,8 @@ function roundToNearestDumbbell(w, facility = null) {
   return best
 }
 
-export function getNearestDumbbellBelowOrEqual(w, facility = null) {
-  const set = facility === 'A' ? DUMBBELL_SETS.A : facility === 'B' ? DUMBBELL_SETS.B : Array.from(new Set([...DUMBBELL_SETS.A, ...DUMBBELL_SETS.B])).sort((a,b)=>a-b)
+export function getNearestDumbbellBelowOrEqual(w) {
+  const set = DUMBBELL_SET_A
   // find max c <= w, else return smallest
   for (let i = set.length - 1; i >= 0; i--) {
     if (set[i] <= w) return set[i]
@@ -380,7 +372,7 @@ export function computeBaseWeightsForNextCycle(previousCycleSessions) {
 }
 
 // Génère le cycle suivant avec progression automatique
-export function generateNextCycle(allCycles, customWeights = null, facility = null) {
+export function generateNextCycle(allCycles, customWeights = null) {
   const lastCycle = allCycles[allCycles.length - 1]
   if (!lastCycle) return null
 
@@ -405,5 +397,5 @@ export function generateNextCycle(allCycles, customWeights = null, facility = nu
     })
   }
 
-  return buildCycle(lastCycle.id + 1, baseWeights, decisions, facility)
+  return buildCycle(lastCycle.id + 1, baseWeights, decisions)
 }
