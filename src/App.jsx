@@ -25,10 +25,6 @@ export default function App() {
   } = useMuscuTraining()
 
   const [sessionActive, setSessionActive] = useState(false)
-  const [showFacilityModal, setShowFacilityModal] = useState(false)
-  const [pendingSession, setPendingSession] = useState(null)
-  const [pendingDayIndex, setPendingDayIndex] = useState(null)
-  const [selectedFacility, setSelectedFacility] = useState(null)
 
   const commonProps = {
     cycles, activeCycle, activeWeek, settings, program,
@@ -40,11 +36,8 @@ export default function App() {
     getProgressionForSession,
   }
 
-  const handleStartSession = (session, dayIndex) => {
-    // Open facility chooser modal before actually starting the session
-    setPendingSession(session)
-    setPendingDayIndex(dayIndex)
-    setShowFacilityModal(true)
+  const handleStartSession = (session) => {
+    setSessionActive(session)
   }
 
   return (
@@ -87,7 +80,6 @@ export default function App() {
             {...commonProps}
             completeSession={completeSession}
             initialSession={sessionActive}
-            initialFacility={selectedFacility}
           />
         )}
         {activeTab === 'history' && (
@@ -113,34 +105,6 @@ export default function App() {
       </main>
 
       <BottomNav active={activeTab} onChange={setActiveTab} />
-
-      {/* Facility chooser modal */}
-      {showFacilityModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/60" onClick={() => setShowFacilityModal(false)} />
-          <div className="relative bg-bg-dark rounded-xl p-6 w-80" style={{ background: '#0B0D11', border: '1px solid rgba(255,255,255,0.06)' }}>
-            <h3 className="font-display text-lg mb-2">Choisir la salle</h3>
-            <p className="font-body text-sm text-muted mb-4">Sélectionne la salle pour adapter les incréments et la série temporaire.</p>
-            <div className="flex gap-2 mb-4">
-              <button className="flex-1 py-2 rounded-xl" onClick={() => {
-                setSelectedFacility('A')
-                setShowFacilityModal(false)
-                setActiveTab('today')
-                setSessionActive(pendingSession)
-              }} style={{ background: '#111827', color: '#fff' }}>Salle A</button>
-              <button className="flex-1 py-2 rounded-xl" onClick={() => {
-                setSelectedFacility('B')
-                setShowFacilityModal(false)
-                setActiveTab('today')
-                setSessionActive(pendingSession)
-              }} style={{ background: '#111827', color: '#fff' }}>Salle B</button>
-            </div>
-            <div className="flex justify-end">
-              <button className="px-3 py-1 rounded-lg" onClick={() => setShowFacilityModal(false)}>Annuler</button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

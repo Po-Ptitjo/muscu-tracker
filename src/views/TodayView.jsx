@@ -258,7 +258,7 @@ function ExercisePanel({ ex, progression, restDefault, sets, onSetsChange }) {
 export default function TodayView({
   cycles, activeCycle, activeWeek, currentCycle, currentWeek,
   currentSessions, getProgressionForSession,
-  completeSession, settings, initialSession, initialFacility,
+  completeSession, settings, initialSession,
 }) {
   const [activeSession, setActiveSession] = useState(null)
   // sessionSets: { exerciseId: [{ id, weight, reps, done }] } — ALL sets (not just done)
@@ -275,7 +275,7 @@ export default function TodayView({
   const totalDone = cycles.flatMap(c => c.weeks.flatMap(w => w.sessions)).filter(s => s.status === 'done').length
 
   // Build initial sets for a given session
-  const buildInitialSets = (session, progression, facility = null) => {
+  const buildInitialSets = (session, progression) => {
     const result = {}
     session.exercises.forEach(ex => {
       const suggestedWeight = progression?.[ex.exerciseId]?.weight ?? ex.weight
@@ -285,7 +285,7 @@ export default function TodayView({
       const decision = progression?.[ex.exerciseId]?.decision
       if (decision === 'add_set') {
         if (ex.equipType === 'free') {
-          const extraWeight = getNearestDumbbellBelowOrEqual(suggestedWeight, facility)
+          const extraWeight = getNearestDumbbellBelowOrEqual(suggestedWeight)
           baseSets.push({ id: baseSets.length, weight: extraWeight, reps: ex.rMin, done: false, temp: true })
         } else {
           baseSets.push({ id: baseSets.length, weight: suggestedWeight, reps: ex.rMin, done: false, temp: true })
@@ -297,7 +297,7 @@ export default function TodayView({
     return result
   }
 
-  const startSession = (session, facility = null) => {
+  const startSession = (session) => {
     const di = currentSessions.findIndex(s => s.id === session.id)
     const sess = { ...session, dayIndex: di }
     const progression = getProgressionForSession(activeCycle, activeWeek, di)
@@ -308,7 +308,7 @@ export default function TodayView({
       setSessionSets(draft.sessionSets)
       setCurrentExIdx(draft.exIdx ?? 0)
     } else {
-      setSessionSets(buildInitialSets(session, progression, facility))
+      setSessionSets(buildInitialSets(session, progression))
       setCurrentExIdx(0)
     }
     setActiveSession(sess)
@@ -355,10 +355,9 @@ export default function TodayView({
   useEffect(() => {
     // Auto-start if parent passed an initialSession
     if (typeof initialSession !== 'undefined' && initialSession) {
-      // ensure initialFacility is passed too
-      startSession(initialSession, initialFacility)
+      startSession(initialSession)
     }
-  }, [initialSession, initialFacility])
+  }, [initialSession])
 
   if (activeSession) {
     const di = activeSession.dayIndex
